@@ -1,29 +1,36 @@
 # GoBite
 
-GoBite is a modern food delivery and restaurant operations app built with Python and Streamlit. It helps users discover nearby restaurants, place orders, track live delivery status, and gives restaurant/admin teams a dashboard to manage active orders and fulfillment.
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Streamlit-1.0%2B-FF4B4B?logo=streamlit&logoColor=white" alt="Streamlit" />
+  <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
+</div>
 
-## Overview
+<p align="center">
+  <strong>GoBite</strong> is a modern food delivery and restaurant operations app built with Python and Streamlit.
+</p>
 
-This project demonstrates a complete delivery workflow in a compact, easy-to-run Streamlit app:
+GoBite helps users discover nearby restaurants, place food orders, track delivery progress, and gives the owner a dedicated admin dashboard to manage active orders and status updates.
 
-- customer signup/login
-- save delivery address and geolocation
-- restaurant discovery and filtering
-- cart and checkout flow
-- ETA estimation using route distance and traffic assumptions
-- live order tracking and order history
-- admin dashboard with multi-order status management
+## Demo Flow
+
+1. Sign up or log in as a customer.
+2. Save a delivery address to see nearby restaurants.
+3. Browse restaurants, filter by cuisine, and add items to a cart.
+4. Place an order with payment and ETA details.
+5. Track the delivery timeline and route map.
+6. Log in with the owner account to access the admin dashboard and update order status.
 
 ## Features
 
-- User authentication with secure password hashing
-- Delivery location saving via geocoding
+- Customer signup and login
+- Delivery address saving with geolocation
 - Restaurant search and cuisine filtering
 - Menu browsing and cart management
-- Order placement with payment selection and ETA feedback
-- Live status timeline and route-inspired tracking card
-- Admin dashboard with status filters and per-order updates
-- MySQL-backed order persistence
+- ETA estimation using route distance and traffic assumptions
+- Live order status timeline and route tracking
+- Owner-only admin dashboard with multi-order controls
+- MySQL-backed persistence for orders and users
 
 ## Tech Stack
 
@@ -62,7 +69,7 @@ pip install -r gobite/requirements.txt
 
 ### 2) Configure environment variables
 
-Create a `.env` file in the `gobite` folder with values like:
+Create a `.env` file inside `gobite/` with:
 
 ```env
 DB_HOST=your_host
@@ -70,14 +77,38 @@ DB_PORT=3306
 DB_USER=your_user
 DB_NAME=your_database
 DB_PASSWORD=your_password
+OWNER_EMAIL=owner@gobite.com
 RAPIDAPI_KEY=your_key
 RAPIDAPI_GEO_HOST=forward-reverse-geocoding.p.rapidapi.com
 ```
+
+> The admin dashboard is restricted to the account whose email matches `OWNER_EMAIL`.
 
 ### 3) Run the app
 
 ```bash
 streamlit run gobite/app.py
+```
+
+## Screenshots
+
+Add project screenshots here as you capture them:
+
+- Customer home and restaurant browsing
+- Cart and checkout flow
+- Live delivery tracking screen
+- Owner admin dashboard
+
+Example layout:
+
+```md
+## Screenshots
+
+### Customer Flow
+![Customer Flow](docs/screenshots/customer-flow.png)
+
+### Owner Admin
+![Owner Admin](docs/screenshots/admin-dashboard.png)
 ```
 
 ## Testing
@@ -86,35 +117,13 @@ streamlit run gobite/app.py
 python -m pytest -q
 ```
 
-## Screenshots
-
-Add project screenshots to this section once you have UI captures ready:
-
-- Customer dashboard
-- Restaurant list and filters
-- Cart/checkout flow
-- Admin order management panel
-- Delivery tracking view
-
-Example layout:
-
-```md
-## Screenshots
-
-### Customer Home
-![Customer Home](docs/screenshots/customer-home.png)
-
-### Admin Dashboard
-![Admin Dashboard](docs/screenshots/admin-dashboard.png)
-```
-
 ## Releases
 
 Current release:
 
 - v1.0.0 — initial public release of GoBite
 
-To create a Git tag locally:
+Create a release tag locally with:
 
 ```bash
 git tag -a v1.0.0 -m "GoBite v1.0.0"
@@ -127,4 +136,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contributing
 
-Pull requests are welcome. For major changes, please open an issue first to discuss the proposed update.
+Pull requests are welcome. For major changes, please open an issue first to discuss the proposal.

@@ -233,6 +233,7 @@ def main():
         unsafe_allow_html=True,
     )
     st.session_state.setdefault("user_id", None)
+    owner_email = (os.getenv("OWNER_EMAIL") or "owner@gobite.com").strip().lower()
     st.title("🛵 GoBite")
     st.caption("Fresh food delivered faster")
     if engine is not None:
@@ -287,7 +288,12 @@ def main():
                 st.session_state.user_id = None
                 st.rerun()
 
-        profile_tab, order_tab, admin_tab = st.tabs(["Profile", "Order history", "Admin dashboard"])
+        is_owner = (user.get("email", "").strip().lower() == owner_email)
+        if is_owner:
+            profile_tab, order_tab, admin_tab = st.tabs(["Profile", "Order history", "Admin dashboard"])
+        else:
+            profile_tab, order_tab = st.tabs(["Profile", "Order history"])
+            st.info("Admin dashboard is restricted to the owner account only.")
 
         with profile_tab:
             st.subheader("Profile")
@@ -311,38 +317,39 @@ def main():
             else:
                 st.info("No previous orders yet.")
 
-        with admin_tab:
-            st.subheader("Restaurant admin panel")
-            dashboard = summarize_admin_dashboard(all_orders)
-            c1, c2, c3 = st.columns(3)
-            c1.metric("Revenue", f"Rs {dashboard['revenue']}")
-            c2.metric("Open orders", dashboard["open_orders"])
-            c3.metric("Delivered", dashboard["status_counts"]["Delivered"])
-            st.write("Status counts")
-            st.json(dashboard["status_counts"])
+        if is_owner:
+            with admin_tab:
+                st.subheader("Restaurant admin panel")
+                dashboard = summarize_admin_dashboard(all_orders)
+                c1, c2, c3 = st.columns(3)
+                c1.metric("Revenue", f"Rs {dashboard['revenue']}")
+                c2.metric("Open orders", dashboard["open_orders"])
+                c3.metric("Delivered", dashboard["status_counts"]["Delivered"])
+                st.write("Status counts")
+                st.json(dashboard["status_counts"])
 
-            order_filters = st.columns(2)
-            with order_filters[0]:
-                filter_status = st.selectbox("Filter status", ["All", "Placed", "Preparing", "Out for Delivery", "Delivered"])
-            with order_filters[1]:
-                restaurants = ["All"] + sorted({row.get("restaurant") for row in all_orders if row.get("restaurant")})
-                filter_restaurant = st.selectbox("Filter restaurant", restaurants)
-            filtered_orders = filter_dashboard_orders(all_orders, status=filter_status, restaurant=filter_restaurant)
-            if filtered_orders:
-                st.dataframe(pd.DataFrame(filtered_orders), use_container_width=True)
-            else:
-                st.info("No orders match the current filters.")
+                order_filters = st.columns(2)
+                with order_filters[0]:
+                    filter_status = st.selectbox("Filter status", ["All", "Placed", "Preparing", "Out for Delivery", "Delivered"])
+                with order_filters[1]:
+                    restaurants = ["All"] + sorted({row.get("restaurant") for row in all_orders if row.get("restaurant")})
+                    filter_restaurant = st.selectbox("Filter restaurant", restaurants)
+                filtered_orders = filter_dashboard_orders(all_orders, status=filter_status, restaurant=filter_restaurant)
+                if filtered_orders:
+                    st.dataframe(pd.DataFrame(filtered_orders), use_container_width=True)
+                else:
+                    st.info("No orders match the current filters.")
 
-            if filtered_orders:
-                selected_order_id = st.selectbox("Choose order to update", [row["id"] for row in filtered_orders], format_func=lambda oid: f"Order #{oid}")
-                selected_order = next((row for row in filtered_orders if row["id"] == selected_order_id), filtered_orders[0])
-                restaurant_statuses = ["Placed", "Preparing", "Out for Delivery", "Delivered"]
-                selected_order_status = st.selectbox("Update order status", restaurant_statuses, index=restaurant_statuses.index(selected_order.get("status", "Placed")))
-                if st.button("Apply status update"):
-                    with engine.begin() as conn:
-                        conn.execute(text("UPDATE orders SET status=:status WHERE id=:id"), {"status": selected_order_status, "id": selected_order_id})
-                    st.success(f"Order #{selected_order_id} updated to {selected_order_status}")
-                    st.rerun()
+                if filtered_orders:
+                    selected_order_id = st.selectbox("Choose order to update", [row["id"] for row in filtered_orders], format_func=lambda oid: f"Order #{oid}")
+                    selected_order = next((row for row in filtered_orders if row["id"] == selected_order_id), filtered_orders[0])
+                    restaurant_statuses = ["Placed", "Preparing", "Out for Delivery", "Delivered"]
+                    selected_order_status = st.selectbox("Update order status", restaurant_statuses, index=restaurant_statuses.index(selected_order.get("status", "Placed")))
+                    if st.button("Apply status update"):
+                        with engine.begin() as conn:
+                            conn.execute(text("UPDATE orders SET status=:status WHERE id=:id"), {"status": selected_order_status, "id": selected_order_id})
+                        st.success(f"Order #{selected_order_id} updated to {selected_order_status}")
+                        st.rerun()
 
         if hotels:
             st.subheader("Restaurants")
