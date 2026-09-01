@@ -7,10 +7,30 @@
 </div>
 
 <p align="center">
-  <strong>GoBite</strong> is a modern food delivery and restaurant operations app built with Python and Streamlit.
+  <strong>GoBite</strong> is the fast, friendly food delivery experience for modern cities.
 </p>
 
-GoBite helps users discover nearby restaurants, place food orders, track delivery progress, and gives the owner a dedicated admin dashboard to manage active orders and status updates.
+Built for the next wave of local food-tech products, GoBite turns restaurant discovery, order tracking, and operations into one streamlined platform for customers and owners alike.
+
+## Why GoBite
+
+GoBite makes food ordering feel effortless:
+
+- customers can discover nearby restaurants and place orders in minutes
+- owners can monitor every active delivery without extra tools
+- every order status stays transparent from kitchen to doorstep
+
+## Feature Highlights
+
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><strong>Smart ordering</strong><br>Search, filter, and place orders in a single flow.</td>
+      <td align="center"><strong>Live delivery</strong><br>Track route progress and ETA updates in real time.</td>
+      <td align="center"><strong>Owner control</strong><br>Manage all active orders through a restricted admin view.</td>
+    </tr>
+  </table>
+</div>
 
 ## Demo Flow
 
@@ -105,9 +125,11 @@ Example layout:
 ## Screenshots
 
 ### Customer Flow
+
 ![Customer Flow](docs/screenshots/customer-flow.png)
 
 ### Owner Admin
+
 ![Owner Admin](docs/screenshots/admin-dashboard.png)
 ```
 

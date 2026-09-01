@@ -115,6 +115,44 @@ def filter_dashboard_orders(orders, status="All", restaurant="All"):
     return filtered
 
 
+def build_active_delivery_cards(orders):
+    colors = {"Placed": "gray", "Preparing": "orange", "Out for Delivery": "red", "Delivered": "green"}
+    cards = []
+    for order in orders:
+        status = order.get("status", "Placed")
+        cards.append({
+            "id": order.get("id"),
+            "restaurant": order.get("restaurant", "Unknown"),
+            "status": status,
+            "total": int(float(order.get("total", 0) or 0)),
+            "color": colors.get(status, "gray"),
+        })
+    return cards
+
+
+def build_order_timeline(orders):
+    timeline = {"Placed": [], "Preparing": [], "Out for Delivery": [], "Delivered": []}
+    for order in orders:
+        status = order.get("status", "Placed")
+        if status in timeline:
+            timeline[status].append({"id": order.get("id"), "restaurant": order.get("restaurant"), "total": int(float(order.get("total", 0) or 0))})
+    return timeline
+
+
+def build_active_driver_map(orders):
+    points = []
+    for index, order in enumerate(orders):
+        if order.get("status") in {"Preparing", "Out for Delivery"}:
+            points.append({
+                "id": order.get("id"),
+                "lat": 12.9716 + (index + 1) * 0.004,
+                "lon": 77.5946 + (index + 1) * 0.003,
+                "status": order.get("status", "Preparing"),
+                "restaurant": order.get("restaurant", "Unknown"),
+            })
+    return points
+
+
 def delivery_status_steps(current_status):
     steps = ["Placed", "Preparing", "Out for Delivery", "Delivered"]
     status_index = steps.index(current_status) if current_status in steps else 0
@@ -318,39 +356,74 @@ def main():
                 st.info("No previous orders yet.")
 
         if is_owner:
-            with admin_tab:
-                st.subheader("Restaurant admin panel")
-                dashboard = summarize_admin_dashboard(all_orders)
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Revenue", f"Rs {dashboard['revenue']}")
-                c2.metric("Open orders", dashboard["open_orders"])
-                c3.metric("Delivered", dashboard["status_counts"]["Delivered"])
-                st.write("Status counts")
-                st.json(dashboard["status_counts"])
+                with admin_tab:
+                    st.subheader("Restaurant admin panel")
+                    dashboard = summarize_admin_dashboard(all_orders)
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("Revenue", f"Rs {dashboard['revenue']}")
+                    c2.metric("Open orders", dashboard["open_orders"])
+                    c3.metric("Delivered", dashboard["status_counts"]["Delivered"])
+                    st.write("Status counts")
+                    st.json(dashboard["status_counts"])
 
-                order_filters = st.columns(2)
-                with order_filters[0]:
-                    filter_status = st.selectbox("Filter status", ["All", "Placed", "Preparing", "Out for Delivery", "Delivered"])
-                with order_filters[1]:
-                    restaurants = ["All"] + sorted({row.get("restaurant") for row in all_orders if row.get("restaurant")})
-                    filter_restaurant = st.selectbox("Filter restaurant", restaurants)
-                filtered_orders = filter_dashboard_orders(all_orders, status=filter_status, restaurant=filter_restaurant)
-                if filtered_orders:
-                    st.dataframe(pd.DataFrame(filtered_orders), use_container_width=True)
-                else:
-                    st.info("No orders match the current filters.")
+                    active_cards = build_active_delivery_cards([row for row in all_orders if row.get("status") != "Delivered"])
+                    if active_cards:
+                        st.subheader("Active deliveries")
+                        cols = st.columns(len(active_cards))
+                        for idx, card in enumerate(active_cards):
+                            with cols[idx]:
+                                color = {"gray": "#94a3b8", "orange": "#f59e0b", "red": "#ef4444", "green": "#22c55e"}[card["color"]]
+                                st.markdown(
+                                    f"""
+                                    <div style="padding:14px; border-radius:14px; background:{color}; color:white; min-height:140px;">
+                                        <b>#{card['id']}</b><br>
+                                        <span>{card['restaurant']}</span><br>
+                                        <span>{card['status']}</span><br>
+                                        <span>Rs {card['total']}</span>
+                                    </div>
+                                    """,
+                                    unsafe_allow_html=True,
+                                )
 
-                if filtered_orders:
-                    selected_order_id = st.selectbox("Choose order to update", [row["id"] for row in filtered_orders], format_func=lambda oid: f"Order #{oid}")
-                    selected_order = next((row for row in filtered_orders if row["id"] == selected_order_id), filtered_orders[0])
-                    restaurant_statuses = ["Placed", "Preparing", "Out for Delivery", "Delivered"]
-                    selected_order_status = st.selectbox("Update order status", restaurant_statuses, index=restaurant_statuses.index(selected_order.get("status", "Placed")))
-                    if st.button("Apply status update"):
-                        with engine.begin() as conn:
-                            conn.execute(text("UPDATE orders SET status=:status WHERE id=:id"), {"status": selected_order_status, "id": selected_order_id})
-                        st.success(f"Order #{selected_order_id} updated to {selected_order_status}")
-                        st.rerun()
+                    timeline = build_order_timeline(all_orders)
+                    st.subheader("Delivery timeline board")
+                    for status, items in timeline.items():
+                        with st.container():
+                            st.caption(status)
+                            if not items:
+                                st.write("No orders")
+                            else:
+                                for item in items:
+                                    st.write(f"#{item['id']} • {item['restaurant']} • Rs {item['total']}")
 
+                    driver_points = build_active_driver_map(all_orders)
+                    if driver_points:
+                        st.subheader("Active driver map")
+                        driver_df = pd.DataFrame(driver_points)
+                        st.map(driver_df[["lat", "lon"]], zoom=12)
+
+                    order_filters = st.columns(2)
+                    with order_filters[0]:
+                        filter_status = st.selectbox("Filter status", ["All", "Placed", "Preparing", "Out for Delivery", "Delivered"])
+                    with order_filters[1]:
+                        restaurants = ["All"] + sorted({row.get("restaurant") for row in all_orders if row.get("restaurant")})
+                        filter_restaurant = st.selectbox("Filter restaurant", restaurants)
+                    filtered_orders = filter_dashboard_orders(all_orders, status=filter_status, restaurant=filter_restaurant)
+                    if filtered_orders:
+                        st.dataframe(pd.DataFrame(filtered_orders), use_container_width=True)
+                    else:
+                        st.info("No orders match the current filters.")
+
+                    if filtered_orders:
+                        selected_order_id = st.selectbox("Choose order to update", [row["id"] for row in filtered_orders], format_func=lambda oid: f"Order #{oid}")
+                        selected_order = next((row for row in filtered_orders if row["id"] == selected_order_id), filtered_orders[0])
+                        restaurant_statuses = ["Placed", "Preparing", "Out for Delivery", "Delivered"]
+                        selected_order_status = st.selectbox("Update order status", restaurant_statuses, index=restaurant_statuses.index(selected_order.get("status", "Placed")))
+                        if st.button("Apply status update"):
+                            with engine.begin() as conn:
+                                conn.execute(text("UPDATE orders SET status=:status WHERE id=:id"), {"status": selected_order_status, "id": selected_order_id})
+                            st.success(f"Order #{selected_order_id} updated to {selected_order_status}")
+                            st.rerun()
         if hotels:
             st.subheader("Restaurants")
             cuisine_options = ["All"] + sorted({hotel["cuisine"] for hotel in hotels.values()})
