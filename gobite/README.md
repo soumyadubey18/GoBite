@@ -15,7 +15,7 @@ geocoding for Bangalore delivery addresses.
 ## Project structure
 
 ```
-tapngo/
+gobite/
 ├── app.py                  # entry point: simple profile + location
 ├── pages/
 │   ├── 1_Restaurants.py    # browse + filter + sort

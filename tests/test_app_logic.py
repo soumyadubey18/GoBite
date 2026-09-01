@@ -1,4 +1,4 @@
-from tapngo.app import (
+from gobite.app import (
     calculate_eta_minutes,
     compute_order_totals,
     delivery_status_steps,
