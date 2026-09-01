@@ -1,7 +1,11 @@
 from gobite.app import (
+    build_active_delivery_cards,
+    build_active_driver_map,
+    build_order_timeline,
     calculate_eta_minutes,
     compute_order_totals,
     delivery_status_steps,
+    determine_user_navigation,
     estimate_delivery_distance_km,
     filter_dashboard_orders,
     filter_hotels,
@@ -61,6 +65,14 @@ def test_filter_hotels_searches_and_sorts():
     assert list(indian.keys()) == ["Aroma Bites"]
 
 
+def test_determine_user_navigation_shows_admin_only_for_owner():
+    owner_nav = determine_user_navigation("owner@gobite.com", "owner@gobite.com")
+    customer_nav = determine_user_navigation("user@example.com", "owner@gobite.com")
+
+    assert owner_nav == ["Home", "Orders", "Tracking", "Profile", "Admin"]
+    assert customer_nav == ["Home", "Orders", "Tracking", "Profile"]
+
+
 def test_calculate_eta_minutes_and_dashboard_summary():
     eta = calculate_eta_minutes(4.5, 3)
     assert eta >= 25
@@ -109,3 +121,26 @@ def test_filter_dashboard_orders_supports_status_and_restaurant_filters():
     filtered = filter_dashboard_orders(orders, status="Preparing", restaurant="Aroma Bites")
     assert len(filtered) == 1
     assert filtered[0]["id"] == 1
+
+
+def test_build_active_delivery_cards_and_timeline():
+    orders = [
+        {"id": 101, "restaurant": "Aroma Bites", "status": "Preparing", "total": 250, "created_at": "2026-09-01 12:00:00"},
+        {"id": 102, "restaurant": "Pizza Palace", "status": "Out for Delivery", "total": 430, "created_at": "2026-09-01 12:10:00"},
+    ]
+    cards = build_active_delivery_cards(orders)
+    assert cards[0]["restaurant"] == "Aroma Bites"
+    assert cards[0]["color"] in {"orange", "red", "green"}
+    timeline = build_order_timeline(orders)
+    assert timeline["Preparing"][0]["id"] == 101
+    assert timeline["Out for Delivery"][0]["id"] == 102
+
+
+def test_build_active_driver_map_returns_active_positions():
+    orders = [
+        {"id": 201, "restaurant": "Aroma Bites", "status": "Out for Delivery", "total": 320},
+        {"id": 202, "restaurant": "Pizza Palace", "status": "Preparing", "total": 290},
+    ]
+    driver_map = build_active_driver_map(orders)
+    assert len(driver_map) == 2
+    assert driver_map[0]["status"] == "Out for Delivery"
