@@ -1,17 +1,29 @@
 # GoBite
 
-GoBite is a food delivery and restaurant admin app built with Python and Streamlit. It lets users browse nearby restaurants, place orders, track delivery status, and gives restaurant/admin users a dashboard to manage active orders and delivery progress.
+GoBite is a modern food delivery and restaurant operations app built with Python and Streamlit. It helps users discover nearby restaurants, place orders, track live delivery status, and gives restaurant/admin teams a dashboard to manage active orders and fulfillment.
+
+## Overview
+
+This project demonstrates a complete delivery workflow in a compact, easy-to-run Streamlit app:
+
+- customer signup/login
+- save delivery address and geolocation
+- restaurant discovery and filtering
+- cart and checkout flow
+- ETA estimation using route distance and traffic assumptions
+- live order tracking and order history
+- admin dashboard with multi-order status management
 
 ## Features
 
-- User signup and login
-- Delivery address saving and geolocation
+- User authentication with secure password hashing
+- Delivery location saving via geocoding
 - Restaurant search and cuisine filtering
-- Cart and checkout flow
-- ETA estimation based on route distance and traffic
-- Live order status updates
-- Restaurant/admin dashboard with multi-order controls
-- Delivery route tracking view
+- Menu browsing and cart management
+- Order placement with payment selection and ETA feedback
+- Live status timeline and route-inspired tracking card
+- Admin dashboard with status filters and per-order updates
+- MySQL-backed order persistence
 
 ## Tech Stack
 
@@ -36,22 +48,21 @@ GoBite/
 │   └── test_app_logic.py
 ├── .gitignore
 ├── README.md
+├── LICENSE
 └── .git
 ```
 
-## Setup
+## Getting Started
 
-1. Open a terminal in the project root.
-2. Create a virtual environment if needed.
-3. Install dependencies:
+### 1) Install dependencies
 
 ```bash
 pip install -r gobite/requirements.txt
 ```
 
-4. Configure environment variables in `gobite/.env`.
+### 2) Configure environment variables
 
-Example:
+Create a `.env` file in the `gobite` folder with values like:
 
 ```env
 DB_HOST=your_host
@@ -63,7 +74,7 @@ RAPIDAPI_KEY=your_key
 RAPIDAPI_GEO_HOST=forward-reverse-geocoding.p.rapidapi.com
 ```
 
-5. Run the app:
+### 3) Run the app
 
 ```bash
 streamlit run gobite/app.py
@@ -71,16 +82,49 @@ streamlit run gobite/app.py
 
 ## Testing
 
-Run the test suite with:
-
 ```bash
 python -m pytest -q
 ```
 
-## Git
+## Screenshots
 
-This repository is initialized with Git and configured for GoBite branding.
+Add project screenshots to this section once you have UI captures ready:
+
+- Customer dashboard
+- Restaurant list and filters
+- Cart/checkout flow
+- Admin order management panel
+- Delivery tracking view
+
+Example layout:
+
+```md
+## Screenshots
+
+### Customer Home
+![Customer Home](docs/screenshots/customer-home.png)
+
+### Admin Dashboard
+![Admin Dashboard](docs/screenshots/admin-dashboard.png)
+```
+
+## Releases
+
+Current release:
+
+- v1.0.0 — initial public release of GoBite
+
+To create a Git tag locally:
+
+```bash
+git tag -a v1.0.0 -m "GoBite v1.0.0"
+git push origin v1.0.0
+```
 
 ## License
 
-This project is for learning and demo purposes.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss the proposed update.
