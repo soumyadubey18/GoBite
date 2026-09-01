@@ -1,0 +1,42 @@
+<svg width="1400" height="420" viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1400" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF7ED"/>
+      <stop offset="0.5" stop-color="#FFE4C7"/>
+      <stop offset="1" stop-color="#F8FAFC"/>
+    </linearGradient>
+    <linearGradient id="cta" x1="100" y1="50" x2="420" y2="150" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F97316"/>
+      <stop offset="1" stop-color="#FB7185"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="420" fill="url(#bg)"/>
+  <circle cx="1120" cy="120" r="120" fill="#FEF3C7" opacity="0.8"/>
+  <circle cx="1230" cy="240" r="150" fill="#FDE68A" opacity="0.35"/>
+  <rect x="80" y="120" width="520" height="180" rx="28" fill="#FFFFFF" fill-opacity="0.8" stroke="#F1F5F9"/>
+  <rect x="108" y="154" width="210" height="16" rx="8" fill="#FDBA74"/>
+  <rect x="108" y="184" width="290" height="12" rx="6" fill="#E2E8F0"/>
+  <rect x="108" y="212" width="250" height="12" rx="6" fill="#E2E8F0"/>
+  <rect x="108" y="242" width="160" height="40" rx="20" fill="url(#cta)"/>
+  <text x="128" y="270" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#FFFFFF">Order now</text>
+
+  <g transform="translate(720 120)">
+    <rect x="0" y="0" width="340" height="180" rx="22" fill="#FFFFFF" stroke="#F1F5F9"/>
+    <rect x="20" y="20" width="300" height="30" rx="12" fill="#FFF7ED"/>
+    <text x="34" y="42" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#9A4D10">Live delivery board</text>
+    <rect x="24" y="72" width="90" height="24" rx="12" fill="#F59E0B"/>
+    <text x="40" y="89" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFF7ED">Preparing</text>
+    <rect x="126" y="72" width="98" height="24" rx="12" fill="#EF4444"/>
+    <text x="147" y="89" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFF7ED">On route</text>
+    <rect x="238" y="72" width="72" height="24" rx="12" fill="#22C55E"/>
+    <text x="256" y="89" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" fill="#FFF7ED">Done</text>
+    <path d="M36 150 C100 88, 170 120, 210 92 S290 78, 302 110" stroke="#FB7185" stroke-width="6" stroke-linecap="round" fill="none"/>
+    <circle cx="36" cy="150" r="8" fill="#F97316"/>
+    <circle cx="302" cy="110" r="8" fill="#10B981"/>
+  </g>
+
+  <g transform="translate(650 20)">
+    <text x="0" y="120" font-family="Arial, Helvetica, sans-serif" font-size="68" font-weight="800" fill="#0F172A">GoBite</text>
+    <text x="2" y="170" font-family="Arial, Helvetica, sans-serif" font-size="22" fill="#475569">Food delivery, simplified.</text>
+  </g>
+</svg>
